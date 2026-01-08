@@ -1875,7 +1875,26 @@ const factor = input => {
 
 self.onmessage = (ev) => {
   const n = ev.data;
-  const factors = factor(n);
-  self.postMessage(factors);
+  const primeFactors = [];
+  const queue = [n];
+
+  while (queue.length > 0) {
+    const target = queue.shift();
+
+    if (target === 1n) continue;
+
+    const result = factor(target);
+
+    if (result.length === 1) {
+      primeFactors.push(result[0]);
+    } else {
+      queue.push(result[0]);
+      queue.push(result[1]);
+    }
+  }
+
+  primeFactors.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+
+  self.postMessage(primeFactors);
 };
 self.postMessage(true);
