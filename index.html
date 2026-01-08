@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>素因数分解</title>
+<style>
+body {
+	max-inline-size: 40rem;
+	margin-inline: auto;
+	margin-block: 0;
+	font-family: system-ui, sans-serif;
+}
+input, button {
+	font: inherit;
+}
+#number {
+	display: block;
+	padding: .5rem;
+	appearance: none;
+	box-sizing: border-box;
+	border: solid .125rem #888;
+	border-radius: 0;
+	inline-size: 100%;
+	margin: 0;
+	color: inherit;
+	background-color: #fff;
+}
+#run {
+	margin-block: .5rem;
+	display: block;
+	inline-size: 100%;
+	appearance: none;
+	padding: .5rem;
+	box-sizing: border-box;
+	border: solid .125rem #aaa;
+	background-color: #eee;
+	color: inherit;
+}
+</style>
+<h1>整数の素因数分解</h1>
+<input type='number' id='number'>
+<button id='run'>実行</button>
+<div id='res'></div>
+<script>
+const factor = async (n) => {
+  const bigN = BigInt(n);
+  return await new Promise((resolve, reject) => {
+    const worker = new Worker('worker.js');
+    worker.onmessage = (ev) => {
+      if (ev.data === true) {
+        worker.postMessage(bigN);
+        console.log('factorization started');
+        return;
+      }
+      worker.terminate();
+      resolve(ev.data);
+    };
+    worker.onerror = (ev) => {
+      reject(ev);
+    };
+  });
+};
+
+const run = document.getElementById('run');
+const num = document.getElementById('number');
+const res = document.getElementById('res');
+run.onclick = () => {res.textContent = '';factor(num.value).then(v => {res.textContent = v.join(' × ')})};
+
+</script>
