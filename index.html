@@ -43,22 +43,22 @@ input, button {
 <div id='res'></div>
 <script>
 const factor = async (n) => {
-  const bigN = BigInt(n);
-  return await new Promise((resolve, reject) => {
-    const worker = new Worker('worker.js');
-    worker.onmessage = (ev) => {
-      if (ev.data === true) {
-        worker.postMessage(bigN);
-        console.log('factorization started');
-        return;
-      }
-      worker.terminate();
-      resolve(ev.data);
-    };
-    worker.onerror = (ev) => {
-      reject(ev);
-    };
-  });
+  const bigN = BigInt(n);
+  return await new Promise((resolve, reject) => {
+    const worker = new Worker('worker.js');
+    worker.onmessage = (ev) => {
+      if (ev.data === true) {
+        worker.postMessage(bigN);
+        console.log('factorization started');
+        return;
+      }
+      worker.terminate();
+      resolve(ev.data);
+    };
+    worker.onerror = (ev) => {
+      reject(ev);
+    };
+  });
 };
 
 const run = document.getElementById('run');
@@ -66,4 +66,8 @@ const num = document.getElementById('number');
 const res = document.getElementById('res');
 run.onclick = () => {res.textContent = '';factor(num.value).then(v => {res.textContent = v.join(' × ')})};
 
+// エンターキーで実行ボタンをクリックする処理を追加
+num.onkeydown = (e) => {
+  if (e.key === 'Enter') run.click();
+};
 </script>
